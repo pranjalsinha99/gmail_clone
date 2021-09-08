@@ -12,24 +12,26 @@ class _SignupScreenState extends State<SignupScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      // appBar: AppBar(
+      //   backgroundColor: Color(0x00000000),
+      //   elevation: 0.0,
+      //   iconTheme: IconThemeData(color: Colors.black),
+      // ),
       body: ListView(
         children: [
-          Padding(
-            padding: const EdgeInsets.only(top: 0),
-            child: Container(
-              // width: 562,
-              height: 238,
-              width: 357,
-              decoration: BoxDecoration(
-                  image: DecorationImage(
-                      image: AssetImage('assets/images/signup.png'),
-                      fit: BoxFit.fitHeight)),
-              // color: Colors.red,
-              // child: Image.asset('assets/im
-              // ages/signup.png',
-              //      fit: BoxFit.fitWidth),
-              child: Column(children: []),
-            ),
+          Container(
+            // width: 562,
+            height: 238,
+            width: 357,
+            decoration: BoxDecoration(
+                image: DecorationImage(
+                    image: AssetImage('assets/images/signup.png'),
+                    fit: BoxFit.fitHeight)),
+            // color: Colors.red,
+            // child: Image.asset('assets/im
+            // ages/signup.png',
+            //      fit: BoxFit.fitWidth),
+            child: Column(children: []),
           ),
           Padding(
             padding: const EdgeInsets.fromLTRB(23, 0, 24, 0),
@@ -150,7 +152,9 @@ class _SignupScreenState extends State<SignupScreen> {
                         )),
                   ),
                   TextButton(
-                      onPressed: () {},
+                      onPressed: () {
+                        Navigator.pop(context);
+                      },
                       child: Text(
                         "Login Instead?",
                         style: TextStyle(
