@@ -8,6 +8,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flamspark/widgets/widgets.dart';
 
@@ -520,7 +521,8 @@ class _MailContainerState extends State<MailContainer> {
                     alignment: Alignment.topRight,
                     // color: Colors.yellow,
                     child: Text(
-                      "02:02 am",
+                      DateFormat('kk:mm a')
+                          .format(HttpDate.parse(widget.email.time)),
                       style: TextStyle(
                           fontSize: 12,
                           fontWeight: FontWeight.w400,

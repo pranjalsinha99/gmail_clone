@@ -1,5 +1,5 @@
 import 'dart:convert';
-
+import 'package:intl/intl.dart';
 import 'package:flamspark/Models/MailModel.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
@@ -42,7 +42,10 @@ class _MailBodyState extends State<MailBody> {
   @override
   Widget build(BuildContext context) {
     print(widget.emailContent.time);
-    print(HttpDate.parse(widget.emailContent.time));
+    // DateTime S = ;
+
+    print(
+        DateFormat('kk:mm a').format(HttpDate.parse(widget.emailContent.time)));
     final serverIP = 'https://android-dev.homingos.com';
 
     Future<http.Response> deleteEmail() async {
@@ -160,105 +163,85 @@ class _MailBodyState extends State<MailBody> {
                                   ),
                                   Padding(
                                     padding: const EdgeInsets.only(top: 38),
-                                    child: Row(
-                                      children: [
-                                        Expanded(
-                                          child: Container(
-                                            height: 43,
-                                            clipBehavior: Clip.antiAlias,
-                                            decoration: BoxDecoration(
-                                                // color: Colors.blue,
-                                                ),
-                                            child: Row(
+                                    child: Container(
+                                      height: 43,
+                                      clipBehavior: Clip.antiAlias,
+                                      decoration: BoxDecoration(
+                                          // color: Colors.orange,
+                                          ),
+                                      child: Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.start,
+                                        children: [
+                                          Padding(
+                                            padding: const EdgeInsets.only(
+                                                top: 3, right: 15),
+                                            child: Container(
+                                              height: 32,
+                                              width: 32,
+                                              alignment: Alignment.center,
+                                              decoration: BoxDecoration(
+                                                  shape: BoxShape.circle,
+                                                  color: widget.iconColor),
+                                              child: Text(
+                                                allEmails[index]
+                                                    .sender
+                                                    .characters
+                                                    .first
+                                                    .toUpperCase(),
+                                                textAlign: TextAlign.center,
+                                                style: TextStyle(
+                                                    fontSize: 20,
+                                                    fontWeight: FontWeight.w400,
+                                                    color: Colors.white),
+                                              ),
+                                            ),
+                                          ),
+                                          Flexible(
+                                            child: Column(
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.start,
                                               children: [
-                                                Padding(
-                                                  padding:
-                                                      const EdgeInsets.only(
-                                                          top: 3),
-                                                  child: Container(
-                                                    height: 32,
-                                                    width: 32,
-                                                    alignment: Alignment.center,
-                                                    decoration: BoxDecoration(
-                                                        shape: BoxShape.circle,
-                                                        color:
-                                                            widget.iconColor),
-                                                    child: Text(
-                                                      allEmails[index]
-                                                          .sender
-                                                          .characters
-                                                          .first
-                                                          .toUpperCase(),
-                                                      textAlign:
-                                                          TextAlign.center,
-                                                      style: TextStyle(
-                                                          fontSize: 20,
-                                                          fontWeight:
-                                                              FontWeight.w400,
-                                                          color: Colors.white),
-                                                    ),
-                                                  ),
+                                                Text(
+                                                  allEmails[index].sender,
+                                                  overflow:
+                                                      TextOverflow.ellipsis,
+                                                  style: GoogleFonts.openSans(
+                                                      fontWeight:
+                                                          FontWeight.w600,
+                                                      fontSize: 16,
+                                                      color: Color(0xFF292929)),
                                                 ),
-                                                Padding(
-                                                  padding:
-                                                      const EdgeInsets.only(
-                                                          left: 10, right: 25),
-                                                  child: Container(
-                                                    // clipBehavior: Clip.antiAlias,
-                                                    // decoration: BoxDecoration(color: Colors.blue),
-                                                    child: Column(
-                                                      crossAxisAlignment:
-                                                          CrossAxisAlignment
-                                                              .start,
-                                                      children: [
-                                                        Container(
-                                                          child: Flexible(
-                                                            child: Text(
-                                                              allEmails[index]
-                                                                  .sender,
-                                                              overflow:
-                                                                  TextOverflow
-                                                                      .clip,
-                                                              textAlign:
-                                                                  TextAlign
-                                                                      .left,
-                                                              style: GoogleFonts.openSans(
-                                                                  fontWeight:
-                                                                      FontWeight
-                                                                          .w600,
-                                                                  fontSize: 16,
-                                                                  color: Color(
-                                                                      0xFF292929)),
-                                                            ),
-                                                          ),
-                                                        ),
-                                                        Padding(
-                                                          padding:
-                                                              const EdgeInsets
-                                                                  .only(top: 5),
-                                                          child: Text(
-                                                            "to me",
-                                                            style: TextStyle(
-                                                                fontSize: 14,
-                                                                fontWeight:
-                                                                    FontWeight
-                                                                        .w500),
-                                                          ),
-                                                        )
-                                                      ],
-                                                    ),
-                                                  ),
+                                                Text(
+                                                  "to me",
+                                                  style: TextStyle(
+                                                      fontSize: 14,
+                                                      fontWeight:
+                                                          FontWeight.w500),
                                                 ),
                                               ],
                                             ),
                                           ),
-                                        ),
-                                        Container(
-                                          height: 43,
-                                          color: Colors.red,
-                                          width: 50,
-                                        ),
-                                      ],
+                                          Padding(
+                                            padding: const EdgeInsets.only(
+                                                left: 25, top: 6),
+                                            child: Container(
+                                              height: 43,
+                                              // color: Colors.red,
+                                              child: Text(
+                                                DateFormat('kk:mm a').format(
+                                                    HttpDate.parse(
+                                                        allEmails[index].time)),
+                                                style: TextStyle(
+                                                    fontSize: 12,
+                                                    color: Color(0xff686B70),
+                                                    fontWeight:
+                                                        FontWeight.w500),
+                                              ),
+                                            ),
+                                          )
+                                        ],
+                                      ),
                                     ),
                                   ),
                                   Padding(
