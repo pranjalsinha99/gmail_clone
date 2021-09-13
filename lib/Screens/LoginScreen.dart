@@ -1,11 +1,17 @@
+import 'dart:async';
+import 'dart:convert';
+import 'dart:developer';
 import 'package:flamspark/Screens/MailListScreen.dart';
 import 'package:flamspark/Screens/SignupScreen.dart';
-import 'dart:convert';
+import 'package:flamspark/Models/MailModel.dart';
+import 'package:flutter/foundation.dart';
+
 import 'package:flutter/material.dart';
 
 import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
 
 class LoginScreen extends StatefulWidget {
   final FlutterSecureStorage storage;
@@ -44,6 +50,25 @@ class _LoginScreenState extends State<LoginScreen> {
     return res;
   }
 
+  Future<List<Email>> getEmails() async {
+    var testkey = await widget.storage.read(key: "jwt");
+    var res = await http.get(
+      Uri.parse('$serverIP/getAllMails'),
+      headers: <String, String>{
+        'x-access-token': testkey.toString(),
+      },
+    );
+    return parseEmails(res.body);
+  }
+
+  List<Email> parseEmails(String responseBody) {
+    final parsed =
+        jsonDecode(responseBody)["mails"].cast<Map<String, dynamic>>();
+
+    return parsed.map<Email>((json) => Email.fromJson(json)).toList();
+  }
+
+  final _formKey = GlobalKey<FormState>();
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -76,9 +101,16 @@ class _LoginScreenState extends State<LoginScreen> {
                 Padding(
                   padding: const EdgeInsets.fromLTRB(23, 28, 24, 0),
                   child: Form(
+                    key: _formKey,
                     child: Column(
                       children: [
                         TextFormField(
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return 'Please enter a email';
+                            }
+                            return null;
+                          },
                           controller: _usernameController,
                           decoration: InputDecoration(
                               hintText: "Enter your mail |",
@@ -106,6 +138,12 @@ class _LoginScreenState extends State<LoginScreen> {
                         Padding(
                           padding: const EdgeInsets.only(top: 15.5, bottom: 38),
                           child: TextFormField(
+                            validator: (value) {
+                              if (value == null || value.isEmpty) {
+                                return 'Please enter a password';
+                              }
+                              return null;
+                            },
                             controller: _passwordController,
                             obscureText: true,
                             decoration: InputDecoration(
@@ -134,30 +172,56 @@ class _LoginScreenState extends State<LoginScreen> {
                         ),
                         TextButton(
                             onPressed: () async {
-                              var username = _usernameController.text;
-                              var password = _passwordController.text;
+                              if (_formKey.currentState!.validate()) {
+                                var username = _usernameController.text;
+                                var password = _passwordController.text;
 
-                              http.Response jwt =
-                                  await attemptLogIn(username, password);
+                                http.Response jwt =
+                                    await attemptLogIn(username, password);
 
-                              if (jwt.statusCode == 201) {
-                                Map<String, dynamic> user =
-                                    jsonDecode(jwt.body);
+                                if (jwt.statusCode == 201) {
+                                  Map<String, dynamic> user =
+                                      jsonDecode(jwt.body);
 
-                                await widget.storage
-                                    .write(key: "jwt", value: user["token"]);
+                                  await widget.storage
+                                      .write(key: "jwt", value: user["token"]);
 
-                                Navigator.push(
-                                    context,
+                                  // log(testemail.toString());
+
+                                  List<Email> myList = await getEmails();
+                                  final SharedPreferences prefs =
+                                      await SharedPreferences.getInstance();
+                                  final String encodedEmails =
+                                      Email.encode(myList);
+                                  // print("encoded data");
+                                  // log(encodedEmails);
+                                  await prefs.setString(
+                                      'Emails', encodedEmails);
+
+                                  // final String emailsString =
+                                  //     prefs.getString('Emails').toString();
+                                  // final List<Email> newList =
+                                  //     Email.decode(emailsString);
+                                  // log(newList.first.body);
+
+                                  // print(myList.first.subject);
+
+                                  Navigator.of(context).pushAndRemoveUntil(
+                                    // the new route
                                     MaterialPageRoute(
-                                        builder: (context) =>
-                                            MailListScreen()));
-                                var testkey =
-                                    await widget.storage.read(key: "jwt");
-                                print(testkey);
-                              } else {
-                                displayDialog(context, "An Error Occurred",
-                                    "No account was found matching that username and password");
+                                      builder: (BuildContext context) =>
+                                          MailListScreen(),
+                                    ),
+
+                                    (Route route) => false,
+                                  );
+                                  // var testkey =
+                                  //     await widget.storage.read(key: "jwt");
+                                  // print(testkey);
+                                } else {
+                                  displayDialog(context, "An Error Occurred",
+                                      "No account was found matching that username and password");
+                                }
                               }
                             },
                             child: Container(
