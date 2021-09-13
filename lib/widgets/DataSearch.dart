@@ -1,5 +1,5 @@
 import 'package:flamspark/Models/MailModel.dart';
-import 'package:flamspark/Screens/MailListScreen.dart';
+import 'package:flamspark/widgets/widgets.dart';
 import 'package:flutter/material.dart';
 import 'dart:math' as math;
 import 'package:shared_preferences/shared_preferences.dart';
@@ -77,9 +77,31 @@ class DataSearch extends SearchDelegate<String> {
               }),
         );
       } else
-        return Text("Not found");
+        return Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Center(
+                child: Image.asset(
+              'assets/images/search.png',
+              height: 220,
+              width: 220,
+            )),
+            Text(
+              "No matches for $query",
+              style: TextStyle(
+                  fontWeight: FontWeight.w400,
+                  fontSize: 14,
+                  color: Color(0x4D000000)),
+            )
+          ],
+        );
     } else
-      return Text("data");
+      return Center(
+          child: Image.asset(
+        'assets/images/search.png',
+        height: 220,
+        width: 220,
+      ));
   }
 
   @override
@@ -97,7 +119,12 @@ class DataSearch extends SearchDelegate<String> {
           },
         );
       } else
-        return Text("No recent searches To display");
+        return Center(
+            child: Image.asset(
+          'assets/images/search.png',
+          height: 220,
+          width: 220,
+        ));
     } else {
       List<String> a = [];
       sublist.forEach((element) {

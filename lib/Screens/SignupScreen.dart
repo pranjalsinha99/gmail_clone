@@ -97,6 +97,12 @@ class _SignupScreenState extends State<SignupScreen> {
               child: Column(
                 children: [
                   TextFormField(
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Please enter a email';
+                      }
+                      return null;
+                    },
                     controller: _usernameController,
                     decoration: InputDecoration(
                         hintText: "Enter your mail |",
@@ -131,7 +137,7 @@ class _SignupScreenState extends State<SignupScreen> {
                     child: TextFormField(
                       validator: (value) {
                         if (value == null || value.isEmpty) {
-                          return 'Please enter a email';
+                          return 'Please enter a password';
                         }
                         return null;
                       },
@@ -167,12 +173,6 @@ class _SignupScreenState extends State<SignupScreen> {
                     ),
                   ),
                   TextFormField(
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return 'Please enter a email';
-                      }
-                      return null;
-                    },
                     controller: _addressController,
                     maxLines: 3,
                     decoration: InputDecoration(

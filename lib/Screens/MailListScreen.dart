@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'package:flamspark/Screens/MailBody.dart';
 import 'package:http/http.dart' as http;
 import 'package:flamspark/Models/MailModel.dart';
 import 'package:flamspark/Screens/LoginScreen.dart';
@@ -8,7 +7,6 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:intl/intl.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flamspark/widgets/widgets.dart';
 
@@ -29,14 +27,12 @@ class _MailListScreenState extends State<MailListScreen> {
   final _storage = FlutterSecureStorage();
   final serverIP = 'https://android-dev.homingos.com';
   String dropdownValue = 'Time';
-  // List<Email> myEmails = [
-  //   Email(
-  //       body: "body",
-  //       id: "id",
-  //       sender: "sender",
-  //       subject: "subject1",
-  //       time: "time")
-  // ];
+
+  void displayDialog(context, title, text) => showDialog(
+        context: context,
+        builder: (context) =>
+            AlertDialog(title: Text(title), content: Text(text)),
+      );
 
   Future<List<Email>> loadEmails() async {
     print("getting emails from sharedprefs");
@@ -54,6 +50,19 @@ class _MailListScreenState extends State<MailListScreen> {
         'x-access-token': testkey.toString(),
       },
     );
+    if (res.statusCode != 200) {
+      displayDialog(context, "Session Timeout", "Please Login Again");
+      Navigator.of(context).pushAndRemoveUntil(
+        // the new route
+        MaterialPageRoute(
+          builder: (BuildContext context) => LoginScreen(
+            storage: _storage,
+          ),
+        ),
+
+        (Route route) => false,
+      );
+    }
     return parseEmails(res.body);
   }
 
@@ -64,19 +73,13 @@ class _MailListScreenState extends State<MailListScreen> {
     return parsed.map<Email>((json) => Email.fromJson(json)).toList();
   }
 
-  // void ini() async {
-  //   getNewEmails();
-
-  // }
-
   void getNewEmails() async {
     dropdownValue = 'Time';
     print("refreshing emails");
     List<Email> myList = await getEmails();
     final SharedPreferences prefs = await SharedPreferences.getInstance();
     final String encodedEmails = Email.encode(myList);
-    // print("encoded data");
-    // log(encodedEmails);
+
     print("updating Sharedprefs");
     await prefs.setString('Emails', encodedEmails);
   }
@@ -90,12 +93,8 @@ class _MailListScreenState extends State<MailListScreen> {
   @override
   Widget build(BuildContext context) {
     bool isDeleteView = false;
-    // ini();
-    // setState(() {});
-    // List<Email> _email = myEmails;
     print("loaded messagelist");
     deleteReq = [];
-    // isDeleteView = false;
 
     return Scaffold(
         drawer: Drawer(
@@ -195,7 +194,6 @@ class _MailListScreenState extends State<MailListScreen> {
                                         fontSize: 12,
                                         fontWeight: FontWeight.w500),
                                   ),
-
                                   DropdownButton<String>(
                                     value: this.dropdownValue,
                                     onChanged: (String? newValue) async {
@@ -251,20 +249,9 @@ class _MailListScreenState extends State<MailListScreen> {
                                       );
                                     }).toList(),
                                   )
-                                  // GestureDetector(
-                                  //   onTap: () {
-                                  //     print("Pressed sort button");
-                                  //   },
-                                  //   child: Icon(
-                                  //     Icons.sort,
-                                  //     color: Colors.black,
-                                  //   ),
-                                  // )
                                 ],
                               ),
                             ),
-                            // MailBody(emailContent: _email.first),
-
                             ...myEmails.map((e) => MailContainer(
                                 mailListCallback: () {
                                   setState(() {});
@@ -283,266 +270,5 @@ class _MailListScreenState extends State<MailListScreen> {
                 }
               }
             }));
-  }
-}
-
-class MailAppBar extends StatefulWidget {
-  bool isDeleteView;
-  MailAppBar({
-    required this.isDeleteView,
-    Key? key,
-  }) : super(key: key);
-
-  @override
-  _MailAppBarState createState() => _MailAppBarState();
-}
-
-class _MailAppBarState extends State<MailAppBar> {
-  void ini() {
-    setState(() {
-      widget.isDeleteView = true;
-    });
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return AppBar(
-      titleSpacing: 0,
-      title: TextField(
-        textAlign: TextAlign.left,
-        decoration: InputDecoration(hintText: "Search messages"),
-        onTap: () {
-          showSearch(context: context, delegate: DataSearch());
-        },
-      ),
-      iconTheme: IconThemeData(color: Colors.black),
-      backgroundColor: Colors.white10,
-
-      // backgroundColor: Colors.red,
-      elevation: 0,
-
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.all(
-          Radius.circular(8),
-        ),
-      ),
-      leading: (widget.isDeleteView == true)
-          ? IconButton(onPressed: () {}, icon: Icon(Icons.arrow_back))
-          : null,
-      actions: [
-        Padding(
-            padding: const EdgeInsets.only(top: 8, bottom: 8, right: 3),
-            child: IconButton(
-              iconSize: 0,
-              padding: const EdgeInsets.all(0),
-              icon: Image.asset(
-                "assets/images/icons/profileImage.png",
-                width: 28,
-                height: 28,
-              ),
-              onPressed: () {},
-            )
-            // child: Container(
-            //   width: 28,
-            //   height: 28,
-            //   decoration: BoxDecoration(
-            //     shape: BoxShape.circle,
-            //     color: Colors.red,
-            //   ),
-            // ),
-            )
-      ],
-    );
-  }
-}
-
-class MailContainer extends StatefulWidget {
-  final Email email;
-  final Color iconColor;
-  final Function updateParent;
-  final Function mailListCallback;
-  MailContainer(
-      {required this.updateParent,
-      required this.mailListCallback(),
-      required this.email,
-      required this.iconColor,
-      Key? key})
-      : super(key: key);
-
-  @override
-  _MailContainerState createState() => _MailContainerState();
-}
-
-class _MailContainerState extends State<MailContainer> {
-  void selectEmail() {
-    setState(() {
-      isClicked = !isClicked;
-      if (isClicked) {
-        deleteReq.add(widget.email.id);
-      } else if (!isClicked) {
-        deleteReq.remove(widget.email.id);
-      }
-      if (deleteReq.isNotEmpty) {
-      } else {}
-      print(deleteReq.toString());
-      // print(isDeleteView);
-    });
-  }
-
-  bool isClicked = false;
-  @override
-  Widget build(BuildContext context) {
-    return GestureDetector(
-      onLongPress: () {
-        selectEmail();
-      },
-      onTap: () {
-        setState(() {
-          print("clicked");
-        });
-
-        Navigator.of(context).push(
-          // the new route
-          MaterialPageRoute(
-            builder: (BuildContext context) => MailBody(
-              mailListCallback: widget.mailListCallback,
-              emailContent: this.widget.email,
-              iconColor: this.widget.iconColor,
-            ),
-          ),
-        );
-      },
-      child: Container(
-        alignment: Alignment.topLeft,
-        height: 80,
-        decoration: BoxDecoration(
-            color: isClicked ? Color(0xFFE2F0FA) : Color(0x00FFFFFF),
-            borderRadius: BorderRadius.all(Radius.circular(8))),
-        // color: Colors.red,
-        child: Padding(
-          padding: const EdgeInsets.symmetric(vertical: 12),
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              GestureDetector(
-                onTap: () {
-                  selectEmail();
-                  // print("clicked icon");
-                },
-                child: Container(
-                  alignment: Alignment.center,
-                  height: 32,
-                  width: 32,
-                  decoration: BoxDecoration(
-                    //             boxShadow: [BoxShadow(
-                    //   color: Colors.grey,
-                    //   blurRadius: 5.0,
-                    // ),],
-                    shape: BoxShape.circle,
-                    color: isClicked ? Color(0xFF0C6EFA) : widget.iconColor,
-                  ),
-                  child: isClicked
-                      ? Icon(
-                          Icons.check,
-                          color: Colors.white,
-                        )
-                      : Text(
-                          widget.email.sender.characters.first.toUpperCase(),
-                          textAlign: TextAlign.center,
-                          style: TextStyle(
-                              fontSize: 20,
-                              fontWeight: FontWeight.w400,
-                              color: Colors.white),
-                        ),
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.only(left: 12),
-                child: Container(
-                  height: 56,
-                  width: 264,
-                  // color: Colors.green,
-                  child: Padding(
-                    padding: const EdgeInsets.only(top: 2),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Row(
-                          children: [
-                            Image.asset(
-                              "assets/images/icons/chevrons-right.png",
-                              width: 16,
-                              height: 20,
-                            ),
-                            Flexible(
-                              child: Padding(
-                                padding: const EdgeInsets.only(left: 4),
-                                child: Text(
-                                  widget.email.sender,
-                                  overflow: TextOverflow.ellipsis,
-                                  maxLines: 1,
-                                  style: TextStyle(
-                                      fontSize: 14,
-                                      fontWeight: FontWeight.w700,
-                                      color: Color(0xFF292929)),
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.only(top: 2),
-                          child: Text(
-                            widget.email.subject,
-                            maxLines: 1,
-                            style: TextStyle(
-                                fontSize: 14,
-                                fontWeight: FontWeight.w500,
-                                color: Color(0xFF292929)),
-                          ),
-                        ),
-                        Text(
-                          widget.email.body,
-                          maxLines: 1,
-                          style: TextStyle(
-                              fontSize: 14,
-                              fontWeight: FontWeight.w400,
-                              color: Color(0xFF5D5C5D)),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              ),
-              Expanded(
-                child: Padding(
-                  padding: const EdgeInsets.only(top: 4),
-                  child: Container(
-                    alignment: Alignment.topRight,
-                    // color: Colors.yellow,
-                    child: Text(
-                      DateFormat('kk:mm a')
-                          .format(HttpDate.parse(widget.email.time)),
-                      style: TextStyle(
-                          fontSize: 12,
-                          fontWeight: FontWeight.w400,
-                          color: Color(0xFF5D5C5D)),
-                    ),
-                  ),
-                ),
-              )
-              // Padding(
-              //   padding:
-              //       const EdgeInsets.only(top: 12, bottom: 12, left: 12),
-              //   child: Container(
-              //     height: 56,
-              //     color: Colors.black,
-              //   ),
-              // )
-            ],
-          ),
-        ),
-      ),
-    );
   }
 }

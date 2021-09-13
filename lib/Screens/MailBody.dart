@@ -42,7 +42,6 @@ class _MailBodyState extends State<MailBody> {
   @override
   Widget build(BuildContext context) {
     print(widget.emailContent.time);
-    // DateTime S = ;
 
     print(
         DateFormat('kk:mm a').format(HttpDate.parse(widget.emailContent.time)));

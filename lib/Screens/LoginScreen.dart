@@ -193,18 +193,9 @@ class _LoginScreenState extends State<LoginScreen> {
                                       await SharedPreferences.getInstance();
                                   final String encodedEmails =
                                       Email.encode(myList);
-                                  // print("encoded data");
-                                  // log(encodedEmails);
+
                                   await prefs.setString(
                                       'Emails', encodedEmails);
-
-                                  // final String emailsString =
-                                  //     prefs.getString('Emails').toString();
-                                  // final List<Email> newList =
-                                  //     Email.decode(emailsString);
-                                  // log(newList.first.body);
-
-                                  // print(myList.first.subject);
 
                                   Navigator.of(context).pushAndRemoveUntil(
                                     // the new route
