@@ -1,16 +1,19 @@
-# flamspark
+# FlamSpark Android App Assignment
 
-A new Flutter project.
+This App was made from scratch according to the design and fucntional specifications described - [Here](https://www.notion.so/Android-iOS-native-28509afe951040c386d5bbf6142ee254)
+
+This App has been developed from scratch using the Flutter Framework.
 
 ## Getting Started
 
-This project is a starting point for a Flutter application.
+To install this app directly on your phone:
 
-A few resources to get you started if this is your first Flutter project:
+- Open the `/Release-APK` folder, where you can find different APK Builds for all the different types of Android devices.
 
-- [Lab: Write your first Flutter app](https://flutter.dev/docs/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://flutter.dev/docs/cookbook)
+To build this project on your local Machine:
 
-For help getting started with Flutter, view our
-[online documentation](https://flutter.dev/docs), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+- Make sure you have Flutter Installed on your device
+- CD into this repository
+- run `flutter pub get`
+- run `flutter build apk --split-per-abi`
+- run `flutter install` to install the app on an Android Device that is connected to your desktop. You might have to enable ADB
