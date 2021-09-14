@@ -26,6 +26,25 @@ class _LoginScreenState extends State<LoginScreen> {
   final TextEditingController _usernameController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
 
+  showLoaderDialog(BuildContext context) {
+    AlertDialog alert = AlertDialog(
+      content: new Row(
+        children: [
+          CircularProgressIndicator(),
+          Container(
+              margin: EdgeInsets.only(left: 7), child: Text("Loading...")),
+        ],
+      ),
+    );
+    showDialog(
+      barrierDismissible: false,
+      context: context,
+      builder: (BuildContext context) {
+        return alert;
+      },
+    );
+  }
+
   void displayDialog(context, title, text) => showDialog(
         context: context,
         builder: (context) => AlertDialog(
@@ -95,10 +114,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         image: DecorationImage(
                             image: AssetImage('assets/images/signup.png'),
                             fit: BoxFit.fitHeight)),
-                    // color: Colors.red,
-                    // child: Image.asset('assets/im
-                    // ages/signup.png',
-                    //      fit: BoxFit.fitWidth),
+
                     child: Column(children: []),
                   ),
                 ),
@@ -179,7 +195,7 @@ class _LoginScreenState extends State<LoginScreen> {
                               if (_formKey.currentState!.validate()) {
                                 var username = _usernameController.text;
                                 var password = _passwordController.text;
-
+                                showLoaderDialog(context);
                                 http.Response jwt = await attemptLogIn(
                                     username.trim(), password);
 
@@ -190,17 +206,6 @@ class _LoginScreenState extends State<LoginScreen> {
                                   await widget.storage
                                       .write(key: "jwt", value: user["token"]);
 
-                                  // log(testemail.toString());
-
-                                  // List<Email> myList = await getEmails();
-                                  // final SharedPreferences prefs =
-                                  //     await SharedPreferences.getInstance();
-                                  // final String encodedEmails =
-                                  //     Email.encode(myList);
-
-                                  // await prefs.setString(
-                                  //     'Emails', encodedEmails);
-
                                   Navigator.of(context).pushAndRemoveUntil(
                                     // the new route
                                     MaterialPageRoute(
@@ -210,10 +215,8 @@ class _LoginScreenState extends State<LoginScreen> {
 
                                     (Route route) => false,
                                   );
-                                  // var testkey =
-                                  //     await widget.storage.read(key: "jwt");
-                                  // print(testkey);
                                 } else {
+                                  Navigator.pop(context);
                                   displayDialog(context, "An Error Occurred",
                                       "No account was found matching that username and password");
                                 }

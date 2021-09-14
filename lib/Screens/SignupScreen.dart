@@ -23,6 +23,25 @@ class _SignupScreenState extends State<SignupScreen> {
   final TextEditingController _passwordController = TextEditingController();
   final TextEditingController _addressController = TextEditingController();
 
+  showLoaderDialog(BuildContext context) {
+    AlertDialog alert = AlertDialog(
+      content: new Row(
+        children: [
+          CircularProgressIndicator(),
+          Container(
+              margin: EdgeInsets.only(left: 7), child: Text("Loading...")),
+        ],
+      ),
+    );
+    showDialog(
+      barrierDismissible: false,
+      context: context,
+      builder: (BuildContext context) {
+        return alert;
+      },
+    );
+  }
+
   void displayDialog(context, title, text) => showDialog(
         context: context,
         builder: (context) => AlertDialog(
@@ -51,7 +70,6 @@ class _SignupScreenState extends State<SignupScreen> {
         'address': address
       }),
     );
-    // body: {"email": username, "password": password});
 
     return res;
   }
@@ -78,25 +96,15 @@ class _SignupScreenState extends State<SignupScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      // appBar: AppBar(
-      //   backgroundColor: Color(0x00000000),
-      //   elevation: 0.0,
-      //   iconTheme: IconThemeData(color: Colors.black),
-      // ),
       body: ListView(
         children: [
           Container(
-            // width: 562,
             height: 238,
             width: 357,
             decoration: BoxDecoration(
                 image: DecorationImage(
                     image: AssetImage('assets/images/signup.png'),
                     fit: BoxFit.fitHeight)),
-            // color: Colors.red,
-            // child: Image.asset('assets/im
-            // ages/signup.png',
-            //      fit: BoxFit.fitWidth),
             child: Column(children: []),
           ),
           Padding(
@@ -220,7 +228,7 @@ class _SignupScreenState extends State<SignupScreen> {
                             var username = _usernameController.text;
                             var password = _passwordController.text;
                             var address = _addressController.text;
-
+                            showLoaderDialog(context);
                             http.Response jwt = await attemptSignUp(
                                 username.trim(), password, address);
 
@@ -230,21 +238,17 @@ class _SignupScreenState extends State<SignupScreen> {
                               await storage.write(
                                   key: "jwt", value: user["token"]);
 
-                              // log(testemail.toString());
+                              Navigator.of(context).pushAndRemoveUntil(
+                                // the new route
+                                MaterialPageRoute(
+                                  builder: (BuildContext context) =>
+                                      MailListScreen(),
+                                ),
 
-                              // List<Email> myList = await getEmails();
-
-                              // print(myList.first.subject);
-
-                              Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                      builder: (context) => MailListScreen(
-                                          // myEmails: myList,
-                                          )));
-                              // var testkey = await storage.read(key: "jwt");
-                              // print(testkey);
+                                (Route route) => false,
+                              );
                             } else {
+                              Navigator.pop(context);
                               displayDialog(context, "An Error Occurred",
                                   "Please Try Again Later");
                             }

@@ -82,7 +82,9 @@ class _MailListScreenState extends State<MailListScreen> {
     final String encodedEmails = Email.encode(myList);
 
     print("updating Sharedprefs");
-    await prefs.setString('Emails', encodedEmails);
+    await prefs
+        .setString('Emails', encodedEmails)
+        .then((value) => {setState(() {})});
   }
 
   @override
@@ -211,13 +213,14 @@ class _MailListScreenState extends State<MailListScreen> {
             children: [
               TextButton(
                   onPressed: () async {
+                    final SharedPreferences prefs2 =
+                        await SharedPreferences.getInstance();
+                    await prefs2.clear();
                     var x = await this._storage.readAll();
                     print(x);
                     setState(() {
                       this._storage.deleteAll();
                     });
-                    x = await this._storage.readAll();
-                    print(x);
 
                     Navigator.of(context).pushAndRemoveUntil(
                       // the new route
