@@ -1,13 +1,10 @@
-import 'package:flamspark/Models/MailModel.dart';
 import 'package:flamspark/Screens/LoginScreen.dart';
-import 'package:flamspark/Screens/MailBody.dart';
 
 import 'package:flamspark/Screens/MailListScreen.dart';
 
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-import 'dart:convert' show json, base64, ascii;
 
 const SERVER_IP = 'https://android-dev.homingos.com';
 final storage = FlutterSecureStorage();
@@ -17,6 +14,20 @@ void main() {
 }
 
 class MyApp extends StatelessWidget {
+  void displayDialog(context, title, text) => showDialog(
+        context: context,
+        builder: (context) => AlertDialog(
+          title: Text(title),
+          content: Text(text),
+          actions: [
+            TextButton(
+                onPressed: () {
+                  Navigator.pop(context);
+                },
+                child: Text("OK"))
+          ],
+        ),
+      );
   Future<int> get jwtOrEmpty async {
     var jwtcode = await storage.read(key: "jwt");
     if (jwtcode == null) {
@@ -45,8 +56,10 @@ class MyApp extends StatelessWidget {
             if (!snapshot.hasData)
               return Scaffold(
                 body: Center(
-                    child: CircularProgressIndicator(
-                  color: Colors.blue,
+                    child: Image.asset(
+                  'assets/images/ic_launcher.png',
+                  width: 200,
+                  height: 125.51,
                 )),
                 backgroundColor: Colors.white,
               );

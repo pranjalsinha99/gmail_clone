@@ -25,9 +25,8 @@ class MailBody extends StatefulWidget {
 }
 
 class _MailBodyState extends State<MailBody> {
+  final serverIP = 'https://android-dev.homingos.com';
   final ItemScrollController itemScrollController = ItemScrollController();
-
-  /// Listener that reports the position of items when the list is scrolled.
   final ItemPositionsListener itemPositionsListener =
       ItemPositionsListener.create();
   final storage = FlutterSecureStorage();
@@ -39,28 +38,37 @@ class _MailBodyState extends State<MailBody> {
     return Email.decode(emailsString);
   }
 
+  Future<http.Response> deleteEmail() async {
+    var testkey = await storage.read(key: "jwt");
+    var res = await http.delete(
+      Uri.parse('$serverIP/deleteMailsByIds'),
+      headers: <String, String>{
+        'x-access-token': testkey.toString(),
+      },
+      body: jsonEncode(<String, dynamic>{
+        "ids": [widget.emailContent.id]
+      }),
+    );
+    return res;
+  }
+
+  void displayDialog(context, title, text) => showDialog(
+        context: context,
+        builder: (context) => AlertDialog(
+          title: Text(title),
+          content: Text(text),
+          actions: [
+            TextButton(
+                onPressed: () {
+                  Navigator.pop(context);
+                },
+                child: Text("OK"))
+          ],
+        ),
+      );
+
   @override
   Widget build(BuildContext context) {
-    print(widget.emailContent.time);
-
-    print(
-        DateFormat('kk:mm a').format(HttpDate.parse(widget.emailContent.time)));
-    final serverIP = 'https://android-dev.homingos.com';
-
-    Future<http.Response> deleteEmail() async {
-      var testkey = await storage.read(key: "jwt");
-      var res = await http.delete(
-        Uri.parse('$serverIP/deleteMailsByIds'),
-        headers: <String, String>{
-          'x-access-token': testkey.toString(),
-        },
-        body: jsonEncode(<String, dynamic>{
-          "ids": [widget.emailContent.id]
-        }),
-      );
-      return res;
-    }
-
     return Scaffold(
         appBar: AppBar(
           leading: IconButton(
@@ -73,8 +81,14 @@ class _MailBodyState extends State<MailBody> {
           actions: [
             IconButton(
                 onPressed: () async {
-                  await deleteEmail().then((value) =>
-                      {print(value.statusCode), Navigator.of(context).pop()});
+                  await deleteEmail().then((value) {
+                    if (value.statusCode == 400) {
+                      Navigator.of(context).pop();
+                      displayDialog(context, "API Error. Did not Respond",
+                          "The Email Could not be deleted");
+                    }
+                    print(value.statusCode);
+                  });
                 },
                 icon: Image.asset(
                   "assets/images/icons/deleteIcon.png",

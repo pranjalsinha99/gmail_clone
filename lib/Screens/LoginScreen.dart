@@ -1,17 +1,13 @@
 import 'dart:async';
 import 'dart:convert';
-import 'dart:developer';
 import 'package:flamspark/Screens/MailListScreen.dart';
 import 'package:flamspark/Screens/SignupScreen.dart';
 import 'package:flamspark/Models/MailModel.dart';
 import 'package:flutter/foundation.dart';
-
 import 'package:flutter/material.dart';
-
 import 'package:google_fonts/google_fonts.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:http/http.dart' as http;
-import 'package:shared_preferences/shared_preferences.dart';
 
 class LoginScreen extends StatefulWidget {
   final FlutterSecureStorage storage;
@@ -32,8 +28,17 @@ class _LoginScreenState extends State<LoginScreen> {
 
   void displayDialog(context, title, text) => showDialog(
         context: context,
-        builder: (context) =>
-            AlertDialog(title: Text(title), content: Text(text)),
+        builder: (context) => AlertDialog(
+          title: Text(title),
+          content: Text(text),
+          actions: [
+            TextButton(
+                onPressed: () {
+                  Navigator.pop(context);
+                },
+                child: Text("OK"))
+          ],
+        ),
       );
 
   Future<http.Response> attemptLogIn(String username, String password) async {
@@ -45,7 +50,6 @@ class _LoginScreenState extends State<LoginScreen> {
       body:
           jsonEncode(<String, String>{'email': username, 'password': password}),
     );
-    // body: {"email": username, "password": password});
 
     return res;
   }
@@ -176,8 +180,8 @@ class _LoginScreenState extends State<LoginScreen> {
                                 var username = _usernameController.text;
                                 var password = _passwordController.text;
 
-                                http.Response jwt =
-                                    await attemptLogIn(username, password);
+                                http.Response jwt = await attemptLogIn(
+                                    username.trim(), password);
 
                                 if (jwt.statusCode == 201) {
                                   Map<String, dynamic> user =
@@ -188,14 +192,14 @@ class _LoginScreenState extends State<LoginScreen> {
 
                                   // log(testemail.toString());
 
-                                  List<Email> myList = await getEmails();
-                                  final SharedPreferences prefs =
-                                      await SharedPreferences.getInstance();
-                                  final String encodedEmails =
-                                      Email.encode(myList);
+                                  // List<Email> myList = await getEmails();
+                                  // final SharedPreferences prefs =
+                                  //     await SharedPreferences.getInstance();
+                                  // final String encodedEmails =
+                                  //     Email.encode(myList);
 
-                                  await prefs.setString(
-                                      'Emails', encodedEmails);
+                                  // await prefs.setString(
+                                  //     'Emails', encodedEmails);
 
                                   Navigator.of(context).pushAndRemoveUntil(
                                     // the new route

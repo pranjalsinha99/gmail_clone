@@ -25,8 +25,17 @@ class _SignupScreenState extends State<SignupScreen> {
 
   void displayDialog(context, title, text) => showDialog(
         context: context,
-        builder: (context) =>
-            AlertDialog(title: Text(title), content: Text(text)),
+        builder: (context) => AlertDialog(
+          title: Text(title),
+          content: Text(text),
+          actions: [
+            TextButton(
+                onPressed: () {
+                  Navigator.pop(context);
+                },
+                child: Text("OK"))
+          ],
+        ),
       );
 
   Future<http.Response> attemptSignUp(
@@ -213,7 +222,7 @@ class _SignupScreenState extends State<SignupScreen> {
                             var address = _addressController.text;
 
                             http.Response jwt = await attemptSignUp(
-                                username, password, address);
+                                username.trim(), password, address);
 
                             if (jwt.statusCode == 201) {
                               Map<String, dynamic> user = jsonDecode(jwt.body);
