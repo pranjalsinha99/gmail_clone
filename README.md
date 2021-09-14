@@ -9,6 +9,7 @@ This App has been developed from scratch using the Flutter Framework.
 To install this app directly on your phone:
 
 - Open the `/Release-APK` folder, where you can find different APK Builds for all the different types of Android devices.
+- Install `app.apk` for universal Compatibility.
 
 To build this project on your local Machine:
 
