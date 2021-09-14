@@ -4,6 +4,10 @@ This App was made from scratch according to the design and fucntional specificat
 
 This App has been developed from scratch using the Flutter Framework.
 
+## NOTE:
+
+Due to the `deleteMailsByIdsApi` & `deleteMailByIdApi` NOT working on the server side, the delete features are currently unable to work. The features have been implemented in the app.
+
 ## Getting Started
 
 To install this app directly on your phone:
