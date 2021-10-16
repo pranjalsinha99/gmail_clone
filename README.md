@@ -1,12 +1,9 @@
-# FlamSpark Android App Assignment
+# Gmail Clone
 
-This App was made from scratch according to the design and fucntional specifications described - [Here](https://www.notion.so/Android-iOS-native-28509afe951040c386d5bbf6142ee254)
-
-This App has been developed from scratch using the Flutter Framework.
-
-## NOTE:
-
-Due to the `deleteMailsByIdsApi` & `deleteMailByIdApi` NOT working on the server side, the delete features are currently unable to work. The features have been implemented in the app.
+This App was made to be a simple clone of the Gmail App built using the FLutter Framework
+<!-- This App was made from scratch according to the design and fucntional specifications described - [Here](https://www.notion.so/Android-iOS-native-28509afe951040c386d5bbf6142ee254) -->
+<!-- 
+This App has been developed from scratch using the Flutter Framework. -->
 
 ## Getting Started
 
